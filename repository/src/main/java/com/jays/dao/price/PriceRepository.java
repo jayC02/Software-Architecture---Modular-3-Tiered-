@@ -18,4 +18,7 @@ public interface PriceRepository extends JpaRepository<Price, Integer> {
     // Example of a custom query using JPQL
     @Query("SELECT p FROM Price p WHERE p.price > :price")
     List<Price> findPricesHigherThan(@Param("price") double price);
+
+    @Query("SELECT MAX(p.id) FROM Price p")
+    Integer findMaxId();
 }

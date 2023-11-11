@@ -5,6 +5,7 @@ import com.jays.mailservice.EmailService;
 import com.jays.model.price.Price;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,9 +35,13 @@ public class PriceServices {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        emailService.sendEmail();
         return repository.findAll();
     }
+
+    public void addPrice(Price price) {
+        repository.save(price);
+    }
+
 
     public void updatePrice(int id, double newPrice) {
         Price price = repository.findById(id).orElse(null);
@@ -61,7 +66,11 @@ public class PriceServices {
             repository.save(price);
         }
     }
-    public Price getPriceById(int id) {
-        return repository.findById(id).orElse(null); // or throw an exception if you prefer
+
+    public int getNextAvailableId() {
+        //   Assuming a method in PriceRepository to get the max ID
+        Integer maxId = repository.findMaxId();
+        return (maxId == null) ? 1 : maxId + 1;
     }
 }
+

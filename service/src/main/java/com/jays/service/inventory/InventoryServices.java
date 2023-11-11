@@ -1,10 +1,12 @@
 package com.jays.service.inventory;
 
 import com.jays.dao.inventory.InventoryRepository;
+import com.jays.mailservice.EmailService;
 import com.jays.model.inventory.Inventory;
 import com.jays.model.price.Price;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,49 +14,31 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
-public class InventoryServices
-{
-
-    private final InventoryRepository inventoryRepository;
+public class InventoryServices {
 
     @Autowired
-    private InventoryRepository invRepository;
-
-
-
-    @PostConstruct
-    public void initInventory()
-    {
-        invRepository.saveAll(Stream.of(new Inventory
-                (201,"Underwear",10,100,3.40,"Clothes"),new Inventory
-                (202,"T shirts",5,50,11.50,"Clothes"))
-                .collect(Collectors.toList()));
-
-    }
-
+    private InventoryRepository inventoryRepository;
     @Autowired
-    public InventoryServices(InventoryRepository inventoryRepository) {
-        this.inventoryRepository = inventoryRepository;
-    }
-    public List<Inventory> findLowStockItems(int threshold){
-        return inventoryRepository.findByQuantityLessThan(threshold);
-    }
-    public Inventory updateInventoryItemStock(int itemId, int quantityToAdd) {
-        Inventory inventoryItem = inventoryRepository.findById(itemId)
-                .orElseThrow(() -> new RuntimeException("Item not found with id: " + itemId));
-        int newQuantity = inventoryItem.getQuantity() + quantityToAdd;
-        inventoryItem.setQuantity(newQuantity);
-        return inventoryRepository.save(inventoryItem);
-    }
-    public List<Inventory> getInventory() {
-        try
-        {
-            System.out.println("getInventory is called");
-        } catch (Exception e)
-        {
-            e.printStackTrace();
+    private EmailService emailService; // Assuming you have an EmailService
 
+    @Scheduled(fixedRate = 10000) // Checks every 10 seconds, adjust as needed
+    public void checkStockLevels() {
+        List<Inventory> lowStockItems = inventoryRepository.findByQuantityLessThanEqual(10); // Example threshold
+        for (Inventory item : lowStockItems) {
+            if (item.getQuantity() == 0) {
+                reorderItem(item);
+            }
+            sendLowStockAlert(item);
         }
-        return invRepository.findAll();
+    }
+
+    private void reorderItem(Inventory item) {
+        // Logic to reorder item from central inventory
+    }
+
+    private void sendLowStockAlert(Inventory item) {
+        // Logic to send alert (e.g., email) about low stock item
+        emailService.sendEmail("manager@example.com", "Low Stock Alert", "Item " + item.getItemName() + " is low in stock.");
     }
 }
+

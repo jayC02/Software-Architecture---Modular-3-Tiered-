@@ -1,6 +1,7 @@
 import com.jays.model.price.Price;
 import com.jays.service.price.PriceServices;
 import javafx.application.Application;
+import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -18,6 +19,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @ComponentScan(basePackages = {"com.jays.*"})
 @EntityScan(basePackages = {"com.jays.*"})
 @EnableJpaRepositories(basePackages = {"com.jays.*"})
+
 public class DEstore extends Application {
 
     private TextField idField;
@@ -25,10 +27,6 @@ public class DEstore extends Application {
     private TextField nameField;
     private TextField saleTypeField;
     private CheckBox isDeliveryFreeCheckbox;
-
-
-
-
 
 
     private static ConfigurableApplicationContext springContext;
@@ -56,12 +54,13 @@ public class DEstore extends Application {
 
         // UI Components for Price Management
         Label nameLabel = new Label("Product Name:");
-        TextField nameField = new TextField();
+        nameField = new TextField(); // Use the class member, don't redeclare it
         Label priceLabel = new Label("Price:");
-        TextField priceField = new TextField();
+        priceField = new TextField(); // Use the class member, don't redeclare it
         Label saleTypeLabel = new Label("Sale Type:");
-        TextField saleTypeField = new TextField();
-        CheckBox isDeliveryFreeCheckbox = new CheckBox("Free Delivery");
+        saleTypeField = new TextField(); // Use the class member, don't redeclare it
+        isDeliveryFreeCheckbox = new CheckBox("Free Delivery"); // Use the class member, don't redeclare it
+
 
         Button addButton = new Button("Add Price");
         Button updateButton = new Button("Update Price");
@@ -69,7 +68,7 @@ public class DEstore extends Application {
         Button removeSaleButton = new Button("Remove Sale Offer");
 
         // Event Handlers
-       // addButton.setOnAction(event -> handleAddPrice());
+        addButton.setOnAction(event -> handleAddPrice());
        // updateButton.setOnAction(event -> handleUpdatePrice());
        // applySaleButton.setOnAction(event -> handleApplySaleOffer());
        // removeSaleButton.setOnAction(event -> handleRemoveSaleOffer());
@@ -99,6 +98,47 @@ public class DEstore extends Application {
         this.primaryStage.setScene(scene);
         this.primaryStage.show();
     }
+
+    private void handleAddPrice() {
+        System.out.println("handleAddPrice called"); // Debugging line
+
+        // Validate input fields
+        if (nameField.getText().isEmpty() || priceField.getText().isEmpty() || saleTypeField.getText().isEmpty()) {
+            showAlert("Please fill in all the fields");
+            return;
+        }
+        try {
+            double price = Double.parseDouble(priceField.getText());
+            String name = nameField.getText();
+            String saleType = saleTypeField.getText();
+            boolean isDeliveryFree = isDeliveryFreeCheckbox.isSelected();
+
+            // Create and add price to the database
+            addPriceToDatabase(name, price, saleType, isDeliveryFree);
+
+            // Update UI
+            updatePriceTableView();
+
+            showAlert("Price added successfully");
+        } catch (NumberFormatException e) {
+            showAlert("Invalid price format");
+            priceField.clear();
+            priceField.requestFocus();
+        }
+    }
+    private void addPriceToDatabase(String name, double price, String saleType, boolean isDeliveryFree) {
+        int id = priceServices.getNextAvailableId();
+        Price newPrice = new Price(id, name, price, saleType, isDeliveryFree);
+        priceServices.addPrice(newPrice);
+    }
+    private void updatePriceTableView() {
+        // Logic to update the price table view
+    }
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, message);
+        alert.showAndWait();
+    }
+
 
     @Override
     public void stop() {
