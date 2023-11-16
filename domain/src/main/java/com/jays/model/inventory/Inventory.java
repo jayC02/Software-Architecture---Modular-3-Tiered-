@@ -24,6 +24,4 @@ public class Inventory
     private int reorderThreshold;
     private double Price;
     private String category;
-
-
 }

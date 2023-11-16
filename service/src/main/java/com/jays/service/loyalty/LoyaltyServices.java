@@ -14,14 +14,11 @@ public class LoyaltyServices {
     @Autowired
     private LoyaltyRepository loyaltyRepository;
 
-    public List<Loyalty> getLoyalty() {
-        try
-        {
-            System.out.println("getLoyaty is called");
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        return loyaltyRepository.findAll();
+
+    public void addPoints(int cardNumber, int points) {
+        System.out.println("Loyalty Services called!");
+        Loyalty card = loyaltyRepository.findById(cardNumber).orElseThrow();
+        card.setPoints(card.getPoints() + points);
+        loyaltyRepository.save(card);
     }
 }

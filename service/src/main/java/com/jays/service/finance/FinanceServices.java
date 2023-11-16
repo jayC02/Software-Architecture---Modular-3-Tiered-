@@ -16,14 +16,24 @@ public class FinanceServices
     @Autowired
     private FinanceRepository financeRepository;
 
-    public List<Finance> getFinance() {
-        try
-        {
-            System.out.println("getFinance is called");
-        } catch (Exception e)
-        {
-            e.printStackTrace();
+    public Finance submitFinanceRequest(Finance request) {
+        request.setStatus("Pending");
+        return financeRepository.save(request);
+    }
+    public void updateFinance(long id, double newPrice) {
+        Finance finance = financeRepository.findById(id).orElse(null);
+        if (finance != null) {
+            finance.updateFinance(newPrice);
+            financeRepository.save(finance);
         }
-        return financeRepository.findAll();
+    }
+    public void addFinance(Finance finance) {
+        financeRepository.save(finance);
+    }
+
+    public int getNextAvailableId() {
+        //   Assuming a method in PriceRepository to get the max ID
+        Integer maxId = financeRepository.findMaxId();
+        return (maxId == null) ? 1 : maxId + 1;
     }
 }

@@ -3,19 +3,20 @@ package com.jays.controller.loyalty;
 import com.jays.model.loyalty.Loyalty;
 import com.jays.service.loyalty.LoyaltyServices;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/loyalty")
 public class LoyaltyController {
 
     @Autowired
-    private LoyaltyServices service;
+    private LoyaltyServices loyaltyService;
 
-    @GetMapping("/loyaltycard")
-    public List<Loyalty> getLoyalty(){
-        return service.getLoyalty();
+    @PostMapping("/addPoints")
+    public void addPoints(@RequestBody Loyalty request)
+    {
+        loyaltyService.addPoints(request.getCardNumber(), request.getPoints());
     }
 }

@@ -1,4 +1,6 @@
+import com.jays.model.finance.Finance;
 import com.jays.model.price.Price;
+import com.jays.service.finance.FinanceServices;
 import com.jays.service.price.PriceServices;
 import javafx.application.Application;
 import javafx.fxml.FXML;
@@ -14,7 +16,9 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
+@EnableScheduling
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.jays.*"})
 @EntityScan(basePackages = {"com.jays.*"})
@@ -22,11 +26,15 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 public class DEstore extends Application {
 
-    private TextField idField;
     private TextField priceField;
     private TextField nameField;
     private TextField saleTypeField;
     private CheckBox isDeliveryFreeCheckbox;
+
+
+    private TextField customerIdField;
+    private TextField amountField;
+
 
 
     private static ConfigurableApplicationContext springContext;
@@ -34,6 +42,7 @@ public class DEstore extends Application {
 
     @Autowired
     private PriceServices priceServices;
+
 
     @Override
     public void init() {
@@ -54,12 +63,22 @@ public class DEstore extends Application {
 
         // UI Components for Price Management
         Label nameLabel = new Label("Product Name:");
-        nameField = new TextField(); // Use the class member, don't redeclare it
+        nameField = new TextField();
         Label priceLabel = new Label("Price:");
-        priceField = new TextField(); // Use the class member, don't redeclare it
+        priceField = new TextField();
         Label saleTypeLabel = new Label("Sale Type:");
-        saleTypeField = new TextField(); // Use the class member, don't redeclare it
-        isDeliveryFreeCheckbox = new CheckBox("Free Delivery"); // Use the class member, don't redeclare it
+        saleTypeField = new TextField();
+        isDeliveryFreeCheckbox = new CheckBox("Free Delivery");
+
+        // UI Components for Finance Management
+        Label customerIdLabel = new Label("Customer ID:");
+        customerIdField = new TextField();
+        Label amountLabel = new Label("Amount:");
+        amountField = new TextField();
+
+        Button submitFinanceRequestButton = new Button("Submit Finance Request");
+        submitFinanceRequestButton.setOnAction(event -> handleSubmitFinanceRequest());
+
 
 
         Button addButton = new Button("Add Price");
@@ -69,6 +88,7 @@ public class DEstore extends Application {
 
         // Event Handlers
         addButton.setOnAction(event -> handleAddPrice());
+        submitFinanceRequestButton.setOnAction(event -> handleSubmitFinanceRequest());
        // updateButton.setOnAction(event -> handleUpdatePrice());
        // applySaleButton.setOnAction(event -> handleApplySaleOffer());
        // removeSaleButton.setOnAction(event -> handleRemoveSaleOffer());
@@ -86,22 +106,24 @@ public class DEstore extends Application {
         gridPane.add(applySaleButton, 0, 5);
         gridPane.add(removeSaleButton, 1, 5);
 
+        //finance
+        gridPane.add(customerIdLabel, 0, 7);
+        gridPane.add(customerIdField, 1, 7);
+        gridPane.add(amountLabel, 0, 8);
+        gridPane.add(amountField, 1, 8);
+        gridPane.add(submitFinanceRequestButton, 0, 9, 2, 1);
+
         // TableView for displaying prices
         TableView<Price> priceTableView = new TableView<>();
-        // Define columns for the TableView here...
-
         // Add TableView to GridPane
         gridPane.add(priceTableView, 0, 6, 2, 1);
-
         // Scene setup
         Scene scene = new Scene(gridPane, 600, 400);
         this.primaryStage.setScene(scene);
         this.primaryStage.show();
     }
-
     private void handleAddPrice() {
-        System.out.println("handleAddPrice called"); // Debugging line
-
+        System.out.println("handleAddPrice called"); // TEST
         // Validate input fields
         if (nameField.getText().isEmpty() || priceField.getText().isEmpty() || saleTypeField.getText().isEmpty()) {
             showAlert("Please fill in all the fields");
@@ -112,13 +134,10 @@ public class DEstore extends Application {
             String name = nameField.getText();
             String saleType = saleTypeField.getText();
             boolean isDeliveryFree = isDeliveryFreeCheckbox.isSelected();
-
             // Create and add price to the database
             addPriceToDatabase(name, price, saleType, isDeliveryFree);
-
             // Update UI
             updatePriceTableView();
-
             showAlert("Price added successfully");
         } catch (NumberFormatException e) {
             showAlert("Invalid price format");
@@ -138,7 +157,20 @@ public class DEstore extends Application {
         Alert alert = new Alert(Alert.AlertType.INFORMATION, message);
         alert.showAndWait();
     }
-
+    private void handleSubmitFinanceRequest() {
+        // Validate input fields
+        if (customerIdField.getText().isEmpty() || amountField.getText().isEmpty()) {
+            showAlert("Please fill in all the fields for finance request");
+            return;
+        }
+        try {
+            showAlert("Finance request submitted successfully");
+        } catch (NumberFormatException e) {
+            showAlert("Invalid amount format");
+            amountField.clear();
+            amountField.requestFocus();
+        }
+    }
 
     @Override
     public void stop() {

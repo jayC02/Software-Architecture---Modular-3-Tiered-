@@ -4,19 +4,24 @@ import com.jays.model.finance.Finance;
 import com.jays.model.inventory.Inventory;
 import com.jays.service.finance.FinanceServices;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/finance")
 public class FinanceController {
 
     @Autowired
-    private FinanceServices service;
+    private FinanceServices financeService;
 
-    @GetMapping("/finance")
-    public List<Finance> getFinance(){
-        return service.getFinance();
+    @PostMapping("/request")
+    public Finance createFinanceRequest(@RequestBody Finance request) {
+        return financeService.submitFinanceRequest(request);
+    }
+    @PutMapping("/{id}")
+    public String updateFinance(@PathVariable Long id, @RequestParam double newFinance) {
+        financeService.updateFinance(id, newFinance);
+        return "Finance updated successfully";
     }
 }

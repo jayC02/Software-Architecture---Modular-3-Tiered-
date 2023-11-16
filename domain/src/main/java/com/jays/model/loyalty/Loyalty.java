@@ -19,12 +19,10 @@ import java.time.LocalDate;
 public class Loyalty
 {
     @Id
-    private int loyaltyCardId;
-    private Long customerId;
+    private int cardNumber;
+    private String customerName;
     private int points;
-    private LocalDate dateIssued; // The date the card was issued
-    private LocalDate lastUsed; // The last date the card was used
-    private Long totalSpent; // Total amount spent by the customer
-    private Boolean isActive; // Status of the loyalty card
+    private Long totalSpent;
+    private Boolean isActive;
 }
 

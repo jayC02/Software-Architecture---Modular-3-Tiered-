@@ -19,11 +19,12 @@ public class InventoryServices {
     @Autowired
     private InventoryRepository inventoryRepository;
     @Autowired
-    private EmailService emailService; // Assuming you have an EmailService
+    private EmailService emailService;
 
-    @Scheduled(fixedRate = 10000) // Checks every 10 seconds, adjust as needed
+    @Scheduled(fixedRate = 100000) // Checks every 100 seconds
     public void checkStockLevels() {
-        List<Inventory> lowStockItems = inventoryRepository.findByQuantityLessThanEqual(10); // Example threshold
+        System.out.println("Stock level Test");
+        List<Inventory> lowStockItems = inventoryRepository.findByQuantityLessThanEqual(10);
         for (Inventory item : lowStockItems) {
             if (item.getQuantity() == 0) {
                 reorderItem(item);
@@ -35,10 +36,12 @@ public class InventoryServices {
     private void reorderItem(Inventory item) {
         // Logic to reorder item from central inventory
     }
-
     private void sendLowStockAlert(Inventory item) {
-        // Logic to send alert (e.g., email) about low stock item
-        emailService.sendEmail("manager@example.com", "Low Stock Alert", "Item " + item.getItemName() + " is low in stock.");
+        emailService.sendEmail("destorespring@gmail.com", "Low Stock Alert", "Item " + item.getItemName() + " is low in stock.");
+    }
+    public List<Inventory> getInventory() {
+        return inventoryRepository.findAll();
+
     }
 }
 

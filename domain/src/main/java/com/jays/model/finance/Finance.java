@@ -1,6 +1,8 @@
 package com.jays.model.finance;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,9 +20,20 @@ import java.time.LocalDateTime;
 public class Finance {
 
     @Id
-    private Long transactionId;
-    private Long customerId;
-    private Long amount;
-    private LocalDateTime applicationDate;
-    private LocalDateTime approvalDate;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+    private String customerId;
+    private Double amount;
+    private String status;
+
+    public void updateFinance(double newFinance) {
+        if (validateFinance(newFinance)) {
+            this.amount = newFinance;
+        }
+    }
+    private boolean validateFinance(double finance) {
+        return finance >= 0;
+    }
+
 }
+
