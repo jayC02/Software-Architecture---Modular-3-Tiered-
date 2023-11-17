@@ -38,6 +38,11 @@ public class PriceServices {
         return repository.findAll();
     }
 
+    public List<Price> getAllPrices() {
+        return repository.findAll();
+    }
+
+
     public void addPrice(Price price) {
         repository.save(price);
     }
