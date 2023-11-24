@@ -27,6 +27,7 @@ public class FinanceServices
             financeRepository.save(finance);
         }
     }
+    //Still to be added finance module
     public void addFinance(Finance finance) {
         financeRepository.save(finance);
     }

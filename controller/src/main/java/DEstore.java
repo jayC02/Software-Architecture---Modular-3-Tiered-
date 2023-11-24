@@ -69,6 +69,7 @@ public class DEstore extends Application {
         financeTab.setClosable(false);
         financeTab.setContent(createFinanceManagementTab());
 
+
         tabPane.getTabs().addAll(priceTab, financeTab);
 
         Scene scene = new Scene(tabPane, 600, 400);
@@ -100,9 +101,9 @@ public class DEstore extends Application {
         // Event Handlers
         addButton.setOnAction(event -> handleAddPrice());
         //submitFinanceRequestButton.setOnAction(event -> handleSubmitFinanceRequest());
-        // updateButton.setOnAction(event -> handleUpdatePrice());
-        // applySaleButton.setOnAction(event -> handleApplySaleOffer());
-        // removeSaleButton.setOnAction(event -> handleRemoveSaleOffer());
+        updateButton.setOnAction(event -> handleUpdatePrice());
+        applySaleButton.setOnAction(event -> handleApplySaleOffer());
+        removeSaleButton.setOnAction(event -> handleRemoveSaleOffer());
 
         // Add components to GridPane
         gridPane.add(nameLabel, 0, 0);
@@ -142,6 +143,46 @@ public class DEstore extends Application {
 
         return gridPane;
     }
+
+    private void handleRemoveSaleOffer() {
+        System.out.println("handleRemoveSaleOffer called"); // TEST
+        if (nameField.getText().isEmpty() || priceField.getText().isEmpty() || saleTypeField.getText().isEmpty()) {
+            showAlert("Please fill in all the fields");
+        }
+    }
+
+    private void handleApplySaleOffer() {
+        System.out.println("handleApplySaleOffer called"); // TEST
+        if (nameField.getText().isEmpty() || priceField.getText().isEmpty() || saleTypeField.getText().isEmpty()) {
+            showAlert("Please fill in all the fields");
+        }
+    }
+
+    private void handleUpdatePrice() {
+        System.out.println("handleUpdatePrice called"); // TEST
+        // Validate input fields
+        if (nameField.getText().isEmpty() || priceField.getText().isEmpty() || saleTypeField.getText().isEmpty()) {
+            showAlert("Please fill in all the fields");
+            return;
+        }
+        try {
+            double price = Double.parseDouble(priceField.getText());
+            // Create and add price to the database
+            updatePriceInDatabase(1, price);
+            // Update UI
+            updatePriceTableView();
+            showAlert("Price updated successfully");
+        } catch (NumberFormatException e) {
+            showAlert("Invalid price format");
+            priceField.clear();
+            priceField.requestFocus();
+        }
+    }
+    private void updatePriceInDatabase(int id, double newPrice) {
+        priceServices.updatePrice(id, newPrice);
+    }
+
+
     private GridPane createFinanceManagementTab() {
         GridPane gridPane = new GridPane();
         gridPane.setPadding(new Insets(10, 10, 10, 10));
@@ -227,7 +268,7 @@ public class DEstore extends Application {
     }
 
     private void loadAndDisplayPrices(TableView<Price> tableView) {
-        List<Price> prices = priceServices.getAllPrices(); // Assuming such a method exists in priceServices
+        List<Price> prices = priceServices.getAllPrices();
         tableView.setItems(FXCollections.observableArrayList(prices));
     }
 

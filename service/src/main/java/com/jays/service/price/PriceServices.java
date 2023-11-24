@@ -77,5 +77,13 @@ public class PriceServices {
         Integer maxId = repository.findMaxId();
         return (maxId == null) ? 1 : maxId + 1;
     }
+
+    public void updatePrice(Price existingPrice) {
+        repository.save(existingPrice);
+    }
+
+    public Price getPriceById(int id) {
+        return repository.findById(id).orElse(null);
+    }
 }
 

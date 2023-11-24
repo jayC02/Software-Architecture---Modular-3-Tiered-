@@ -35,6 +35,7 @@ public class InventoryServices {
 
     private void reorderItem(Inventory item) {
         // Logic to reorder item from central inventory
+        System.out.println("Item " + item.getItemName() + " is out of stock. and has been reordered.");
     }
     private void sendLowStockAlert(Inventory item) {
         emailService.sendEmail("destorespring@gmail.com", "Low Stock Alert", "Item " + item.getItemName() + " is low in stock.");
